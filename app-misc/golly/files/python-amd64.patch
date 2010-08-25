@@ -1,0 +1,14 @@
+--- golly-2.1-src.old/wxpython.cpp	2009-09-04 02:19:47.000000000 +0200
++++ golly-2.1-src.new/wxpython.cpp	2010-06-08 19:02:01.000000000 +0200
+@@ -185,7 +185,11 @@
+ } pythonFuncs[] =
+ {
+    PYTHON_FUNC(Py_Initialize)
++#ifdef __x86_64
++   { _T("Py_InitModule4_64"), (PYTHON_PROC*)&G_Py_InitModule4 },
++#else
+    PYTHON_FUNC(Py_InitModule4)
++#endif
+    PYTHON_FUNC(Py_Finalize)
+    PYTHON_FUNC(PyErr_Occurred)
+    PYTHON_FUNC(PyErr_SetString)
