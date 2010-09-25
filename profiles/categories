@@ -11,4 +11,5 @@ dev-util
 games-emulation 
 games-strategy 
 media-sound 
-sys-kernel
+sys-kernel 
+x11-libs
