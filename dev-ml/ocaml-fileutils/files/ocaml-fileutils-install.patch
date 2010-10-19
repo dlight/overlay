@@ -1,0 +1,14 @@
+diff -ur ../ocaml-fileutils-0.4.0.origin/Makefile ./Makefile
+--- ../ocaml-fileutils-0.4.0.origin/Makefile	2009-09-09 21:36:15.000000000 -0300
++++ ./Makefile	2010-10-19 09:56:38.885000033 -0300
+@@ -52,8 +52,8 @@
+ 	-$(RM) "TopMakefile"
+ 
+ install: all
+-	$(INSTALL) -d $(htmldir)/api
+-	$(INSTALL_DATA) -t $(htmldir)/api \
++	$(INSTALL) -d $(DESTDIR)/$(htmldir)/api
++	$(INSTALL_DATA) -t $(DESTDIR)/$(htmldir)/api \
+ 	  $(wildcard $(BUILDDIR)/fileutils.docdir/*)
+ 	$(OCAMLFIND) install \
+ 	  -patch-version $(PACKAGE_VERSION) \
