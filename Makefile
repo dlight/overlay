@@ -1,5 +1,5 @@
 CATEGORIES:=$(wildcard *-*)
-EBUILDS:=$(wildcard *-*/*)
+EBUILDS:=$(wildcard *-*/* virtual/*)
 MANIFESTS:=$(addsuffix /Manifest, $(EBUILDS))
 
 all: ${MANIFESTS} profiles/categories
