@@ -4,7 +4,7 @@
 
 EAPI=2
 
-inherit games
+inherit games autotools
 
 DESCRIPTION="An unquestionably awesome 2D game engine"
 HOMEPAGE="http://love2d.org/"
@@ -26,3 +26,11 @@ DEPEND="dev-games/physfs
 RDEPEND="${DEPEND}"
 
 S=${WORKDIR}/${PN}-20100303-db7cd0682883
+
+src_prepare() {
+	epatch "${FILESDIR}/${P}-configure.patch" || die "patch failed"
+}
+
+src_configure() {
+	true
+}
