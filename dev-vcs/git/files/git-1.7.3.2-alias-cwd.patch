@@ -1,0 +1,79 @@
+With "!"-prefixed shell aliases, the shell command not only gets
+executed at the repository top level, but there is no way to know the
+current directory of the original call.  This adds "!!"-prefixed aliases
+as a similar variant for "!"-prefixed ones, but the commands are
+executed in the original directory instead of the top level.
+
+Signed-off-by: Eli Barzilay <eli@barzilay.org>
+---
+
+It looks like setup_git_directory_gently() returns the original CWD, but
+since it's not documented or commented, I don't know if this is reliable
+or not, so it might need to change.
+
+Also, it might make more sense to document the "!!" variant first, since
+it is generally more useful, but the way things evolved with "!!" being
+the longer prefix, it seems to me that documenting it after "!" is more
+sensible.
+
+This fixes the broken use of alias_command that Jared Hance caught.
+
+ Documentation/config.txt |    9 +++++++--
+ git.c                    |   14 +++++++++++---
+ 2 files changed, 18 insertions(+), 5 deletions(-)
+
+#diff --git a/Documentation/config.txt b/Documentation/config.txt
+#index 92f851e..055f4e3 100644
+#--- a/Documentation/config.txt
+#+++ b/Documentation/config.txt
+#@@ -549,13 +549,18 @@ alias.*::
+# 	spaces, the usual shell quoting and escaping is supported.
+# 	quote pair and a backslash can be used to quote them.
+# +
+#-If the alias expansion is prefixed with an exclamation point,
+#+If the alias expansion is prefixed with a single exclamation point,
+# it will be treated as a shell command.  For example, defining
+# "alias.new = !gitk --all --not ORIG_HEAD", the invocation
+# "git new" is equivalent to running the shell command
+#-"gitk --all --not ORIG_HEAD".  Note that shell commands will be
+#+"gitk --all --not ORIG_HEAD".  Note that such shell commands will be
+# executed from the top-level directory of a repository, which may
+# not necessarily be the current directory.
+#++
+#+If the alias expansion is prefixed with two exclamation points,
+#+it will be treader similarly to the above, except that the shell commands
+#+are executed at the current directory.
+#+
+# 
+# am.keepcr::
+# 	If true, git-am will call git-mailsplit for patches in mbox format
+diff --git a/git.c b/git.c
+index 6bae305..3d8ed20 100644
+--- a/git.c
++++ b/git.c
+@@ -167,14 +167,22 @@ static int handle_alias(int *argcp, const char ***argv)
+ 				free(alias_string);
+ 				alias_string = buf.buf;
+ 			}
++			/* going to exit anyway, so it's fine to change
++			 * alias_string to the actual command */
++			alias_string += 1;
++			if (alias_string[0] == '!') {
++				alias_string += 1;
++				if (subdir && chdir(subdir))
++					die_errno("Cannot change to '%s'", subdir);
++			}
+ 			trace_printf("trace: alias to shell cmd: %s => %s\n",
+-				     alias_command, alias_string + 1);
+-			ret = system(alias_string + 1);
++				     alias_command, alias_string);
++			ret = system(alias_string);
+ 			if (ret >= 0 && WIFEXITED(ret) &&
+ 			    WEXITSTATUS(ret) != 127)
+ 				exit(WEXITSTATUS(ret));
+ 			die("Failed to run '%s' when expanding alias '%s'",
+-			    alias_string + 1, alias_command);
++			    alias_string, alias_command);
+ 		}
+ 		count = split_cmdline(alias_string, &new_argv);
+ 		if (count < 0)
