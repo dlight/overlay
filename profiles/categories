@@ -14,6 +14,7 @@ games-emulation
 games-engines 
 games-strategy 
 media-sound 
+net-libs 
 sys-kernel 
 www-servers 
 x11-libs
