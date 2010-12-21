@@ -1,0 +1,52 @@
+From 9baf5cd934d8725755591b9fd233b56d63f5a7a0 Mon Sep 17 00:00:00 2001
+From: Elias Gabriel Amaral da Silva <tolkiendili@gmail.com>
+Date: Tue, 21 Dec 2010 10:46:18 -0300
+Subject: [PATCH] Expands properties on run slave-mode command
+
+This expands properties on run command. For example, the command
+
+    run "echo ${filename}"
+
+will print the current playing filename to stdout.
+
+(It is unfortunate that properties look like shell variables)
+---
+ DOCS/tech/slave.txt |    5 +++++
+ command.c           |    5 ++++-
+ 2 files changed, 9 insertions(+), 1 deletions(-)
+
+diff --git a/DOCS/tech/slave.txt b/DOCS/tech/slave.txt
+index e31a9f4..5bcf074 100644
+--- a/DOCS/tech/slave.txt
++++ b/DOCS/tech/slave.txt
+@@ -508,6 +508,11 @@ run <value>
+     Run <value> as shell command. In OSD menu console mode stdout and stdin
+     are through the video output driver.
+ 
++    It expands properties inside the command. Due to an unfortunate
++    syntax clash, it *looks* like those properties are shell variables,
++    but then aren't. (for example, in run "echo ${filename}",
++    ${filename} is a mplayer property, not a shell variable!)
++
+ 
+ Available properties:
+ 
+diff --git a/command.c b/command.c
+index b95b750..89686eb 100644
+--- a/command.c
++++ b/command.c
+@@ -3126,7 +3126,10 @@ int run_command(MPContext *mpctx, mp_cmd_t *cmd)
+         case MP_CMD_RUN:
+ #ifndef __MINGW32__
+             if (!fork()) {
+-                execl("/bin/sh", "sh", "-c", cmd->args[0].v.s, NULL);
++                execl("/bin/sh", "sh", "-c",
++                      m_properties_expand_string(mp_properties,
++                                                 cmd->args[0].v.s,
++                                                 mpctx), NULL);
+                 exit(0);
+             }
+ #endif
+-- 
+1.7.3.2
+
