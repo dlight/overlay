@@ -8,7 +8,7 @@ inherit games autotools
 
 DESCRIPTION="An unquestionably awesome 2D game engine"
 HOMEPAGE="http://love2d.org/"
-SRC_URI=" mirror://sourceforge/${PN}/${P}-linux-src.tar.gz"
+SRC_URI="http://bitbucket.org/rude/love/downloads/love-0.7.0-linux-src.tar.gz"
 
 LICENSE="ZLIB"
 SLOT="0"
