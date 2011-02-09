@@ -18,4 +18,5 @@ media-video
 net-libs 
 sys-kernel 
 www-servers 
-x11-libs
+x11-libs 
+xfce-base
